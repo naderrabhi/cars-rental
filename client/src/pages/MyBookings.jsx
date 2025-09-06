@@ -1,19 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { assets, dummyMyBookingsData } from "../assets/assets";
+import { assets } from "../assets/assets";
 import Title from "../components/Title";
+import toast from "react-hot-toast";
+import { useAppContext } from "../context/AppContext";
+import { motion } from "motion/react";
 
 const MyBookings = () => {
+  const { axios, currency, user } = useAppContext();
+
   const [bookings, setBookings] = useState([]);
-  const currency = import.meta.env.VITE_CURRENCY;
 
   const fetchMyBookings = async () => {
-    setBookings(dummyMyBookingsData);
+    try {
+      const { data } = await axios.get("/api/bookings/user");
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   useEffect(() => {
-    fetchMyBookings();
-  });
+    user && fetchMyBookings();
+  }, [user]);
   return (
-    <div className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl">
+    <motion.div
+      initial={{ y: 30, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl"
+    >
       <Title
         title="My Bookings"
         subTitle="View and manage your all car bookings"
@@ -22,7 +40,10 @@ const MyBookings = () => {
 
       <div>
         {bookings.map((booking, index) => (
-          <div
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
             key={booking._id}
             className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-5 first:mt-12"
           >
@@ -93,10 +114,10 @@ const MyBookings = () => {
                 <p>Booked on {booking.createdAt.split("T")[0]}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

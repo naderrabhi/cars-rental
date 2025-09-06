@@ -1,5 +1,6 @@
 import imagekit from "../configs/imageKit.js";
 import Booking from "../models/Booking.js";
+import Car from "../models/Car.js";
 import User from "../models/User.js";
 import fs from "fs";
 
@@ -23,7 +24,7 @@ export const addCar = async (req, res) => {
     const fileBuffer = fs.readFileSync(imageFile.path);
     const response = await imagekit.upload({
       file: fileBuffer,
-      fileName: imageFile.originalName,
+      fileName: imageFile.originalname,
       folder: "/cars",
     });
 
@@ -67,7 +68,7 @@ export const toggleCarAvailability = async (req, res) => {
       return res.json({ success: false, message: "Unauthorized" });
     }
 
-    car.isAvaliable = !car.isAvaliable;
+    car.isAvailable = !car.isAvailable;
     await car.save();
 
     res.json({ success: true, message: "Availability Toggled" });
@@ -89,7 +90,7 @@ export const deleteCar = async (req, res) => {
     }
 
     car.owner = null;
-    car.isAvaliable = false;
+    car.isAvailable = false;
 
     await car.save();
 
